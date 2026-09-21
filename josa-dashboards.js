@@ -1,4 +1,4 @@
-const STRATEGY_VERSION = "0.2.1";
+const STRATEGY_VERSION = "0.2.2";
 
 // Which build is loaded is the first question on any bug report, and a
 // dashboard resource has nowhere else to say so. scripts/release.sh keeps this
