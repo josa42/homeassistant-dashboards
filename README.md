@@ -34,6 +34,14 @@ and `favorite_tilt_positions` in the entity registry, and falls back to
 `0, 25, 75, 100` for a cover that has none. Set them under the cover's settings,
 not here. A cover without slats gets no tilt row.
 
+Where the [Cover Control](https://github.com/josa42/homeassistant-cover-control)
+integration manages a cover, the tile is followed by an **Automatik** tile
+showing what the automation currently intends (Beschattung, Sonnenheizen,
+Neutral, Pausiert, Manueller Eingriff, ...) and a **Fortsetzen** button that
+appears only while there is something to resume. Covers the integration does not
+manage just get their tile, and an instance without the integration sees no
+difference at all.
+
 | Preset | Raffstore | Rolladen |
 |--------|-----------|----------|
 | Alles zu | zu, Lamellen geschlossen | zu |

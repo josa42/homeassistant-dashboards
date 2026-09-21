@@ -147,7 +147,73 @@ function presetSection(floor, floorId, covers, options) {
   };
 }
 
-function coverSection(covers) {
+// The cover_control integration puts a cover's automation entities on their
+// own device rather than the cover's, so the registries alone cannot pair them
+// up. Two things make it work anyway: every entity for one cover shares that
+// cover's config subentry, and the decision sensor names its cover in a
+// `cover_entity` attribute. An instance without the integration yields an empty
+// map, and the cover tiles are then the whole section.
+const CONTROL_PLATFORM = "cover_control";
+
+function collectControls(hass, registries) {
+  const bySubentry = new Map();
+  for (const entry of registries.entities) {
+    if (entry.platform !== CONTROL_PLATFORM) continue;
+    // Hub entities carry no subentry, which is what separates them here.
+    if (!entry.config_subentry_id || !entry.translation_key) continue;
+    const group = bySubentry.get(entry.config_subentry_id) ?? {};
+    group[entry.translation_key] = entry.entity_id;
+    bySubentry.set(entry.config_subentry_id, group);
+  }
+
+  const byCover = new Map();
+  for (const group of bySubentry.values()) {
+    if (!group.decision) continue;
+    const coverEntity = hass.states[group.decision]?.attributes.cover_entity;
+    if (coverEntity) byCover.set(coverEntity, group);
+  }
+  return byCover;
+}
+
+function controlCards(control) {
+  const cards = [];
+  if (!control) return cards;
+
+  if (control.decision) {
+    cards.push({
+      type: "tile",
+      entity: control.decision,
+      name: "Automatik",
+      grid_options: { columns: 6 },
+    });
+  }
+
+  if (control.resume) {
+    cards.push({
+      type: "tile",
+      entity: control.resume,
+      name: "Fortsetzen",
+      icon: "mdi:play",
+      // A tile opens more-info by default, which is not what a button is for.
+      tap_action: {
+        action: "perform-action",
+        perform_action: "button.press",
+        target: { entity_id: control.resume },
+      },
+      // The integration already decides when resuming means anything: the
+      // button reports unavailable unless the cover is paused or overridden.
+      // Mirroring that beats a second guess at the same question.
+      visibility: [
+        { condition: "state", entity: control.resume, state_not: "unavailable" },
+      ],
+      grid_options: { columns: 6 },
+    });
+  }
+
+  return cards;
+}
+
+function coverSection(covers, controls) {
   const area = covers[0].area;
   return {
     type: "grid",
@@ -158,7 +224,7 @@ function coverSection(covers) {
         heading_style: "subtitle",
         icon: area.icon || "mdi:window-shutter",
       },
-      ...covers.map((cover) => ({
+      ...covers.flatMap((cover) => [{
         type: "tile",
         entity: cover.entityId,
         state_content: cover.hasTilt
@@ -172,7 +238,9 @@ function coverSection(covers) {
         features: cover.hasTilt
           ? [{ type: "cover-position-favorite" }, { type: "cover-tilt-favorite" }]
           : [{ type: "cover-position-favorite" }],
-      })),
+      },
+      ...controlCards(controls.get(cover.entityId)),
+      ]),
     ],
   };
 }
@@ -201,6 +269,7 @@ class JosaBeschattungViewStrategy extends HTMLElement {
 
     const registries = await loadRegistries(hass);
     const covers = collectCovers(hass, registries, options);
+    const controls = collectControls(hass, registries);
 
     if (!covers.length) {
       return {
@@ -233,7 +302,7 @@ class JosaBeschattungViewStrategy extends HTMLElement {
     for (const floorId of options.floors) {
       const floorCovers = covers.filter((cover) => cover.floorId === floorId);
       for (const areaCovers of groupByArea(floorCovers)) {
-        sections.push(coverSection(areaCovers));
+        sections.push(coverSection(areaCovers, controls));
       }
     }
 

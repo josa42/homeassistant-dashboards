@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Added
+
+- **Automation state beside every cover.** Where Cover Control manages a cover,
+  its tile is followed by the automation's current intent and, while the cover
+  is paused or overridden, a button to hand control back. Covers it does not
+  manage are unchanged, and an instance without the integration sees nothing
+  new.
+
 ### Changed
 
 - **Cover tiles use favourite buttons instead of sliders.** Each cover now
