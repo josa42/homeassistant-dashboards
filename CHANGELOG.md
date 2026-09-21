@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- **The automation row no longer leaves a hole beside every cover.** Automatik
+  and Fortsetzen sit in one full-width row instead of two half-width tiles, and
+  Automatik widens to fill it whenever there is nothing to resume. Half-width
+  tiles could not share a row with the next cover, so each one left a ragged
+  gap, which showed up as soon as a room had more than one cover.
+
 ## 0.2.0 - 2026-09-21
 
 ### Added

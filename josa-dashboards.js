@@ -184,7 +184,6 @@ function controlCards(control) {
       type: "tile",
       entity: control.decision,
       name: "Automatik",
-      grid_options: { columns: 6 },
     });
   }
 
@@ -206,11 +205,18 @@ function controlCards(control) {
       visibility: [
         { condition: "state", entity: control.resume, state_not: "unavailable" },
       ],
-      grid_options: { columns: 6 },
     });
   }
 
-  return cards;
+  if (!cards.length) return cards;
+
+  // One row, not two half-width tiles in the section's own grid. A tile at six
+  // columns still takes a whole row there, because the next cover needs all
+  // twelve and cannot move up beside it, so the spare half was just a hole
+  // next to every cover. That reads as a ragged edge once a room has more than
+  // one. Inside a horizontal stack the cards share the row instead, and a
+  // hidden Fortsetzen widens the Automatik tile rather than leaving a gap.
+  return [{ type: "horizontal-stack", cards }];
 }
 
 function coverSection(covers, controls) {
