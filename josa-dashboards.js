@@ -208,15 +208,43 @@ function controlCards(control) {
     });
   }
 
-  if (!cards.length) return cards;
+  return cards;
+}
 
-  // One row, not two half-width tiles in the section's own grid. A tile at six
-  // columns still takes a whole row there, because the next cover needs all
-  // twelve and cannot move up beside it, so the spare half was just a hole
-  // next to every cover. That reads as a ragged edge once a room has more than
-  // one. Inside a horizontal stack the cards share the row instead, and a
-  // hidden Fortsetzen widens the Automatik tile rather than leaving a gap.
-  return [{ type: "horizontal-stack", cards }];
+// One cover: its card, and everything else that controls it beside it.
+//
+// The controls go in a single stack rather than as grid items of their own.
+// Two cards of four columns would fill the row beside the cover only while
+// both are showing; the moment Fortsetzen hides, the second slot empties and
+// the next cover cannot move up into it, which is the ragged edge this layout
+// had before. One stack always occupies exactly one slot.
+//
+// A cover the integration does not manage has nothing to put beside it, so its
+// card takes the full width instead of leaving a third of the row empty.
+function coverCards(cover, control) {
+  const tile = {
+    type: "tile",
+    entity: cover.entityId,
+    state_content: cover.hasTilt
+      ? ["state", "current_position", "current_tilt_position"]
+      : ["state", "current_position"],
+    features_position: "bottom",
+    // Favourite buttons rather than sliders. Their values are not ours to
+    // set: the feature reads options.cover.favorite_positions off the
+    // entity registry, falling back to [0, 25, 75, 100]. A Rolladen gets
+    // no tilt row, because the feature renders nothing without slats.
+    features: cover.hasTilt
+      ? [{ type: "cover-position-favorite" }, { type: "cover-tilt-favorite" }]
+      : [{ type: "cover-position-favorite" }],
+  };
+
+  const controls = controlCards(control);
+  if (!controls.length) return [tile];
+
+  return [
+    { ...tile, grid_options: { columns: 8 } },
+    { type: "vertical-stack", cards: controls, grid_options: { columns: 4 } },
+  ];
 }
 
 function coverSection(covers, controls) {
@@ -230,23 +258,7 @@ function coverSection(covers, controls) {
         heading_style: "subtitle",
         icon: area.icon || "mdi:window-shutter",
       },
-      ...covers.flatMap((cover) => [{
-        type: "tile",
-        entity: cover.entityId,
-        state_content: cover.hasTilt
-          ? ["state", "current_position", "current_tilt_position"]
-          : ["state", "current_position"],
-        features_position: "bottom",
-        // Favourite buttons rather than sliders. Their values are not ours to
-        // set: the feature reads options.cover.favorite_positions off the
-        // entity registry, falling back to [0, 25, 75, 100]. A Rolladen gets
-        // no tilt row, because the feature renders nothing without slats.
-        features: cover.hasTilt
-          ? [{ type: "cover-position-favorite" }, { type: "cover-tilt-favorite" }]
-          : [{ type: "cover-position-favorite" }],
-      },
-      ...controlCards(controls.get(cover.entityId)),
-      ]),
+      ...covers.flatMap((cover) => coverCards(cover, controls.get(cover.entityId))),
     ],
   };
 }

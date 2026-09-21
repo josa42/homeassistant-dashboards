@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- **A cover and its controls share one row.** The cover card takes two thirds
+  of the row and Automatik and Fortsetzen stand beside it in the remaining
+  third, rather than below it. A cover that Cover Control does not manage keeps
+  the full width. Every cover is now exactly one row, so a room with several no
+  longer reads as a ragged column of half-filled ones.
+
 ## 0.2.1 - 2026-09-21
 
 ### Fixed
