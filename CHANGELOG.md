@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- **Cover tiles use favourite buttons instead of sliders.** Each cover now
+  shows its favourite positions, and a Raffstore its favourite slat angles, as
+  buttons that highlight the current one. The values live in the entity
+  registry per cover, so they are set under the cover's settings rather than in
+  the dashboard.
+
 ## 0.1.0 - 2026-09-21
 
 ### Added

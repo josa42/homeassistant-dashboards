@@ -165,9 +165,13 @@ function coverSection(covers) {
           ? ["state", "current_position", "current_tilt_position"]
           : ["state", "current_position"],
         features_position: "bottom",
+        // Favourite buttons rather than sliders. Their values are not ours to
+        // set: the feature reads options.cover.favorite_positions off the
+        // entity registry, falling back to [0, 25, 75, 100]. A Rolladen gets
+        // no tilt row, because the feature renders nothing without slats.
         features: cover.hasTilt
-          ? [{ type: "cover-position" }, { type: "cover-tilt-position" }]
-          : [{ type: "cover-position" }],
+          ? [{ type: "cover-position-favorite" }, { type: "cover-tilt-favorite" }]
+          : [{ type: "cover-position-favorite" }],
       })),
     ],
   };

@@ -24,7 +24,15 @@ button, or by pasting its YAML into the raw config editor.
 A **view strategy**. One view for every Rolladen and Raffstore, per floor.
 
 Each floor leads with three presets, and every cover then gets its own tile
-below with its position, its slat angle, and a slider for each.
+below with its position, its slat angle, and a row of favourite buttons for
+each. Tapping the tile itself still opens the more-info dialog.
+
+The favourite buttons come from the `cover-position-favorite` and
+`cover-tilt-favorite` features, so their values are per entity rather than per
+dashboard: Home Assistant reads them from `options.cover.favorite_positions`
+and `favorite_tilt_positions` in the entity registry, and falls back to
+`0, 25, 75, 100` for a cover that has none. Set them under the cover's settings,
+not here. A cover without slats gets no tilt row.
 
 | Preset | Raffstore | Rolladen |
 |--------|-----------|----------|
