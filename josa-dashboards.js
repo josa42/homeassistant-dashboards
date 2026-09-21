@@ -121,28 +121,28 @@ function presetSection(floor, floorId, covers, options) {
         heading_style: "title",
         icon: floorIcon(floor),
       },
-      {
-        type: "grid",
-        columns: 3,
-        square: false,
-        cards: PRESETS.map((preset) => ({
-          type: "button",
-          name: preset.name,
-          icon: preset.icon,
-          tap_action: {
-            action: "perform-action",
-            perform_action: "scene.apply",
-            data: {
-              entities: Object.fromEntries(
-                covers.map((cover) => [
-                  cover.entityId,
-                  presetState(preset.id, cover.hasTilt, options),
-                ])
-              ),
-            },
+      // A button card puts a large icon above its name and cannot be turned
+      // round. The shortcut card builds on the same ha-tile-container as the
+      // tile card, so it reads as a compact row: small icon, label beside it.
+      // Three at four columns fill one row of the section's twelve.
+      ...PRESETS.map((preset) => ({
+        type: "shortcut",
+        label: preset.name,
+        icon: preset.icon,
+        grid_options: { columns: 4 },
+        tap_action: {
+          action: "perform-action",
+          perform_action: "scene.apply",
+          data: {
+            entities: Object.fromEntries(
+              covers.map((cover) => [
+                cover.entityId,
+                presetState(preset.id, cover.hasTilt, options),
+              ])
+            ),
           },
-        })),
-      },
+        },
+      })),
     ],
   };
 }

@@ -12,6 +12,9 @@
 
 ### Changed
 
+- **Preset buttons read as compact rows.** They are shortcut cards now rather
+  than button cards, so each is a small icon with its label beside it instead of
+  a large icon stacked above it. Three still fill one row.
 - **Cover tiles use favourite buttons instead of sliders.** Each cover now
   shows its favourite positions, and a Raffstore its favourite slat angles, as
   buttons that highlight the current one. The values live in the entity
