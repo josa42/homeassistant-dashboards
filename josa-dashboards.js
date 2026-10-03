@@ -1,8 +1,8 @@
 const STRATEGY_VERSION = "0.2.2";
 
 // Which build is loaded is the first question on any bug report, and a
-// dashboard resource has nowhere else to say so. scripts/release.sh keeps this
-// in step with the tag.
+// dashboard resource has nowhere else to say so. The release workflow keeps
+// this in step with the tag.
 console.info(
   `%c JOSA-DASHBOARDS %c ${STRATEGY_VERSION} `,
   "color:#fff;background:#03a9f4;font-weight:700",
